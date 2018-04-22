@@ -412,9 +412,9 @@
 <p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。</p>
 <p>&emsp;&emsp;如果注入的时候在<code>&#39;</code>前面加上<code>%df</code>字符变成<code>%df&#39;</code>，经过转义之后变成<code>%df%5c%27</code>，而之前说了MYSQL默认的是<code>GBK</code>等宽字节字符集，<code>GBK</code>编码格式会把本来属于<code>ascii</code>编码的字符‘吃掉’，会将<code>%df%5c</code>编码成<code>運</code>，所以会将<code>%df%5c%27</code>编码成<code>運&#39;</code>。</p>
 <p>&emsp;&emsp;于是就可以继续愉快的注入了。</p>
-<p>&emsp;&emsp;<strong>==注：==</strong> </p>
-<p>&emsp;&emsp;&emsp;&emsp;==1.宽字节注入与HTML页面编码是无关的，在<code>&lt;meta charset=utf8&gt;</code>情况下一样有可能进行宽字节注入。==</p>
-<p>&emsp;&emsp;&emsp;&emsp;==2.宽字节注入不一定只有<code>GBK</code>编码，宽字节编码都有可能可以进行宽字节注入。==</p>
+<p>&emsp;&emsp;<strong>注：</strong> </p>
+<p>&emsp;&emsp;&emsp;&emsp;1.宽字节注入与HTML页面编码是无关的，在<code>&lt;meta charset=utf8&gt;</code>情况下一样有可能进行宽字节注入。</p>
+<p>&emsp;&emsp;&emsp;&emsp;2.宽字节注入不一定只有<code>GBK</code>编码，宽字节编码都有可能可以进行宽字节注入。</p>
 <p>&emsp;&emsp;<strong>例：</strong></p>
 <p>&emsp;&emsp;BugkuCTF–sql注入:<a href="http://103.238.227.13:10083/" target="_blank" rel="noopener">http://103.238.227.13:10083/</a></p>
 <p>&emsp;&emsp;使用<code>&#39;</code>没有反应，于是猜测是宽字节注入。</p>
