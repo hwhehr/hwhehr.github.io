@@ -406,7 +406,9 @@
           <h1 id="一、SQL注入"><a href="#一、SQL注入" class="headerlink" title="一、SQL注入"></a>一、SQL注入</h1><ul>
 <li><h5 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h5></li>
 </ul>
-<p>&emsp;&emsp;宽字节注入原理：<br></p>
+<p>&emsp;&emsp;宽字节注入原理：</p>
+<p>&emsp;&emsp;<strong><code>GBK</code> 占用两字节，<code>ASCII</code>占用一字节。PHP中编码为<code>GBK</code>，函数执行添加的是<code>ASCII编码</code>，MYSQL默认字符集是<code>GBK</code>等宽字节字符集。</strong></p>
+<p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。<br></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/04/22/SQLInjectionAttack/#more" rel="contents">
